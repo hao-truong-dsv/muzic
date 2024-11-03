@@ -28,3 +28,5 @@ textrank4zh==0.3
 tabulate
 pytz
 importlib_resources
+pandas
+ipykernel
