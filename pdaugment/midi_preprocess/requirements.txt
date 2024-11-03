@@ -1,0 +1,13 @@
+miditoolkit
+mido
+tqdm
+pretty_midi
+numpy
+pandas
+Pool
+scipy
+pypianoroll
+argparse
+pyyaml
+scikit-learn==0.21.3
+ipykernel
