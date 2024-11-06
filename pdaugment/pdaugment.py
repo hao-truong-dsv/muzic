@@ -406,6 +406,7 @@ def main():
 
     # process using multithreading
     def worker(meta_data):
+        print(f"worker::: {meta_data}")
         path, wave_name, phone, new_phone = meta_data
         
         while True:
@@ -463,6 +464,7 @@ def main():
             return
 
     def muli_task(N, tasks):
+        print(f"mulitask::: {N}, {tasks}")
         pool = multiprocessing.Pool(N)
         pool.map(worker, tasks)
         pool.close()
