@@ -398,6 +398,15 @@ def duration_change(mappings, ori_wav, sr):
     return output_wav
 
 def main():
+    print(f"main::: {pickle_path},
+    {frequency_json_file},
+    {metadata_dir},
+    {dataset_dir},
+    {midi_file_fir},
+    {output_duration_dir},
+    {output_pitch_dir},
+    {output_pdaugment_dir},
+    {number_of_threads}")
     # metadata of libritts dataset
     frame_period = 12.5
     meta_data = pd.read_csv(metadata_dir)

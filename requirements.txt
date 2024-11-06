@@ -29,4 +29,7 @@ tabulate
 pytz
 importlib_resources
 pandas
+numpy
 ipykernel
+librosa
+pyworld
