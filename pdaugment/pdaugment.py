@@ -465,7 +465,7 @@ def main():
 
     def muli_task(N, tasks):
         print(f"mulitask::: {N}, {tasks}")
-        pool = multiprocessing.Process(target=worker,args=tasks)
+        pool = multiprocessing.Process(target=worker,args=(tasks))
         # pool.map(worker, tasks)
         pool.start()
         pool.join()
