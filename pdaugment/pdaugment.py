@@ -464,12 +464,11 @@ def main():
             return
 
     def muli_task(N, tasks):
-        print(f"mulitask::: {N}, {(tasks)}")
-        pool = multiprocessing.Process(target=worker,args=(tasks))
-        # pool.map(worker, tasks)
-        if __name__ == "__main__":
-            pool.start()
-            pool.join()
+        print(f"mulitask::: {N}, {tasks}")
+        pool = multiprocessing.Pool(N)
+        pool.map(worker, tasks)
+        pool.close()
+        pool.join()
 
     muli_task(number_of_threads, meta_datas)
 
