@@ -463,14 +463,10 @@ def main():
         except Exception:
             return
 
-    def muli_task(N, tasks):
-        print(f"mulitask::: {N}, {tasks}")
-        pool = multiprocessing.Pool(N)
-        pool.map(worker, tasks)
-        pool.close()
-        pool.join()
-
-    muli_task(number_of_threads, meta_datas)
+    pool = multiprocessing.Pool(number_of_threads)
+    pool.map(worker, meta_datas)
+    pool.close()
+    pool.join()
 
 if __name__ == '__main__':
     pickle_path = "data/pickle/mel_splits.pickle"
