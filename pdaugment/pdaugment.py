@@ -482,12 +482,9 @@ if __name__ == '__main__':
     output_duration_dir = "data/duration"
     output_pitch_dir = "data/pitch"
     output_pdaugment_dir = "data/pdaugment"
+    midis_train_path = "data/midis/freemidi"
     number_of_threads = 16
-
     all_midi_path = []
-    for file in os.listdir("data/midis/freemidi"):
-        if os.path.splitext(file)[1] == '.mid':
-            all_midi_path.append(file)
 
     try:
         pickle_path = sys.argv[1]
@@ -499,6 +496,11 @@ if __name__ == '__main__':
         output_pitch_dir = sys.argv[7]
         output_pdaugment_dir = sys.argv[8]
         number_of_threads = int(sys.argv[9])
+        midis_train_path = sys.argv[10]
+
+        for file in os.listdir(midis_train_path):
+            if os.path.splitext(file)[1] == '.mid':
+                all_midi_path.append(file)
     except IndexError:
         print("Need eight command line parameters.")
         # load metadata
@@ -506,7 +508,7 @@ if __name__ == '__main__':
             fre = json.load(f)
         with open(pickle_path, "rb") as f:
             mel_data = pickle.load(f)
-        for file in os.listdir("data/midis/freemidi"):
+        for file in os.listdir("freemidi"):
             if os.path.splitext(file)[1] == '.mid':
                 all_midi_path.append(file)
     main()
