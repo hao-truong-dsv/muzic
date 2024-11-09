@@ -399,11 +399,9 @@ def duration_change(mappings, ori_wav, sr):
 
 # process using multithreading
 def worker(meta_data):
-    print(f"worker::: {meta_data}")
     path, wave_name, phone, new_phone = meta_data
     
     while True:
-        print("all_midi_path:::", all_midi_path)
         s_midi_path = random.choice(all_midi_path)
         midi_path = midi_file_fir + "/" + s_midi_path
         notes = midi2notes(midi_path)
@@ -417,7 +415,7 @@ def worker(meta_data):
     try:
         wav, sr = librosa.core.load(path, sr=None)
         syllables = get_syllables(mel_data[wave_name], phone, new_phone)
-        
+        print("try 1", wav, sr, syllables)
         # Part 1: Determine the correspondence between notes and syllables (one-to-many or many-to-one) according to the duration of MIDI and speech.
         mappings = note_syllable_mapping(notes, syllables)
         x = wav.astype(np.double)
@@ -425,17 +423,18 @@ def worker(meta_data):
         f0 = pw.stonemask(x, _f0, t, sr)  # pitch refinement
         nonz = np.nonzero(f0)
         mean_f0 = 0
+        print("try 2", mappings, _f0, f0)
         for index in nonz:
             mean_f0 = mean_f0 + f0[index] 
-        
+        print("try 3", mean_f0)
         # Part 2: Adjust MIDI tonality according to the average pitch of speech.
         speech_mean_pitch = sum(mean_f0)/len(mean_f0)
         new_mappings, notes_mean_pitch = midi_key_shift(speech_mean_pitch, mappings)
-        
+        print("try 4", new_mappings)
         # Part 3: Adjust pitch to get pitch-augmented wav.
         pitch_wav = pitch_shift(new_mappings, wav, sr)
         single_duration_wav = duration_change(new_mappings, wav, sr)
-
+        print("try 5", pitch_wav, single_duration_wav)
         d_path = os.path.join(output_duration_dir, "/".join(path.split("/")[-4:]))
         p_path = os.path.join(output_pitch_dir, "/".join(path.split("/")[-4:]))
         pd_path = os.path.join(output_pdaugment_dir, "/".join(path.split("/")[-4:]))
@@ -447,18 +446,18 @@ def worker(meta_data):
             os.makedirs(d_path)
         if not os.path.exists(os.path.join(output_duration_dir, "/".join(path.split("/")[-4:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt")):
             os.system("cp " + os.path.join("/".join(path.split("/")[:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt") + " " + os.path.join(output_duration_dir, "/".join(path.split("/")[-4:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt"))
-        
+        print("try 6")
         sf.write(d_path, single_duration_wav, sr, 'PCM_24')
         sf.write(p_path, pitch_wav, sr, 'PCM_24')
-
+        print("try 7")
         # Part 4: Adjust duration to get duration-augmented wav.
         duration_wav = duration_change(new_mappings, pitch_wav, sr)
         sf.write(pd_path, duration_wav, sr, 'PCM_24')
+        print("try 8", duration_wav)
     except Exception:
         return
 
 def muli_task(N, tasks):
-    print(f"mulitask::: {N}, {tasks}")
     pool = multiprocessing.Pool(N)
     pool.map(worker, tasks)
     pool.close()
@@ -466,7 +465,6 @@ def muli_task(N, tasks):
 
 
 def main():
-    print(f"main::: {pickle_path}, {frequency_json_file},{metadata_dir},{dataset_dir},{midi_file_fir},{output_duration_dir},{output_pitch_dir},{output_pdaugment_dir},{number_of_threads},{midis_train_path}")
     # metadata of libritts dataset
     frame_period = 12.5
     meta_data = pd.read_csv(metadata_dir)
