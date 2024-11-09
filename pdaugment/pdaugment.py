@@ -113,6 +113,7 @@ def get_syllables(wav_data, phone, new_phone):
     result = []
     word_phones = phone.split(" / ")
     syllable_index = 0
+    print(wav_data, phone, new_phone, word_phones)
     for word in word_phones:
         if "punc_" in word:
             continue
@@ -156,7 +157,7 @@ def get_syllables(wav_data, phone, new_phone):
         
         phone_index += len(syllable)
         pass
-    
+    print(syllables)
     return syllables
 
 # Part 1: Determine the correspondence between notes and syllables (one-to-many or many-to-one) according to the duration of MIDI and speech.
@@ -414,6 +415,7 @@ def worker(meta_data):
     print("s_midi_path", s_midi_path)
     try:
         wav, sr = librosa.core.load(path, sr=None)
+        print("try 0", wav, sr)
         syllables = get_syllables(mel_data[wave_name], phone, new_phone)
         print("try 1", wav, sr, syllables)
         # Part 1: Determine the correspondence between notes and syllables (one-to-many or many-to-one) according to the duration of MIDI and speech.
