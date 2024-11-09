@@ -466,7 +466,7 @@ def muli_task(N, tasks):
 
 
 def main():
-    print(f"main::: {pickle_path}, {frequency_json_file},{metadata_dir},{dataset_dir},{midi_file_fir},{output_duration_dir},{output_pitch_dir},{output_pdaugment_dir},{number_of_threads}")
+    print(f"main::: {pickle_path}, {frequency_json_file},{metadata_dir},{dataset_dir},{midi_file_fir},{output_duration_dir},{output_pitch_dir},{output_pdaugment_dir},{number_of_threads},{midis_train_path}")
     # metadata of libritts dataset
     frame_period = 12.5
     meta_data = pd.read_csv(metadata_dir)
@@ -500,6 +500,7 @@ if __name__ == '__main__':
 
         for file in os.listdir(midis_train_path):
             if os.path.splitext(file)[1] == '.mid':
+                print(file)
                 all_midi_path.append(file)
     except IndexError:
         print("Need eight command line parameters.")
