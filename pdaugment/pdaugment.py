@@ -82,10 +82,12 @@ def midi2notes(midi_path):
     @return
     data: data is a tuple consists of the pitch, duration and interval information of the given midi file
     """
+    print("check 1")
     midi_obj = miditoolkit.midi.parser.MidiFile(midi_path)
     data = []
     notes = midi_obj.instruments[0].notes
     mapping = midi_obj.get_tick_to_time_mapping()
+    print("check 2")
     for i in range(len(notes)):
         note = notes[i]
         st = mapping[note.start]
@@ -96,6 +98,7 @@ def midi2notes(midi_path):
         else:
             next_st = end
         data.append((note.pitch, end-st, next_st-end))
+    print("check 3")
     return data
 
 # extract syllables from wav
