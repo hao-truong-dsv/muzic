@@ -413,8 +413,9 @@ def worker(meta_data):
 
     s_midi_path = s_midi_path.split(".")[0]
     print("s_midi_path", s_midi_path, path)
+    
     try:
-        wav, sr = librosa.core.load(path, sr=None)
+        wav, sr = librosa.core.load(os.path.abspath("") + "/muzic/pdaugment/" + path, sr=None)
         print("try 0", wav)
         syllables = get_syllables(mel_data[wave_name], phone, new_phone)
         print("try 1", syllables)
