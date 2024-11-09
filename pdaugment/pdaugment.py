@@ -501,7 +501,7 @@ if __name__ == '__main__':
         for file in os.listdir(midis_train_path):
             if os.path.splitext(file)[1] == '.mid':
                 print(file)
-                all_midi_path.append(file)
+                all_midi_path.append("freemidi/" + file)
     except IndexError:
         print("Need eight command line parameters.")
         # load metadata
