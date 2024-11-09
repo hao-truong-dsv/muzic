@@ -503,7 +503,7 @@ if __name__ == '__main__':
             fre = json.load(f)
         with open(pickle_path, "rb") as f:
             mel_data = pickle.load(f)
-        for file in os.listdir("freemidi"):
+        for file in os.listdir("data/midis/freemidi"):
             if os.path.splitext(file)[1] == '.mid':
                 all_midi_path.append(file)
     main()
