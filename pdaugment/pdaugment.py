@@ -485,6 +485,9 @@ if __name__ == '__main__':
     number_of_threads = 16
 
     all_midi_path = []
+    for file in os.listdir("data/midis/freemidi"):
+        if os.path.splitext(file)[1] == '.mid':
+            all_midi_path.append(file)
 
     try:
         pickle_path = sys.argv[1]
