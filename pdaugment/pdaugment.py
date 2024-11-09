@@ -415,9 +415,9 @@ def worker(meta_data):
     print("s_midi_path", s_midi_path)
     try:
         wav, sr = librosa.core.load(path, sr=None)
-        print("try 0", wav, sr)
+        print("try 0", wav)
         syllables = get_syllables(mel_data[wave_name], phone, new_phone)
-        print("try 1", wav, sr, syllables)
+        print("try 1", syllables)
         # Part 1: Determine the correspondence between notes and syllables (one-to-many or many-to-one) according to the duration of MIDI and speech.
         mappings = note_syllable_mapping(notes, syllables)
         x = wav.astype(np.double)
