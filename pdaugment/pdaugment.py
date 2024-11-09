@@ -403,6 +403,7 @@ def worker(meta_data):
     path, wave_name, phone, new_phone = meta_data
     
     while True:
+        print("all_midi_path:::", all_midi_path)
         s_midi_path = random.choice(all_midi_path)
         midi_path = midi_file_fir + s_midi_path
         notes = midi2notes(midi_path)
