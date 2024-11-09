@@ -397,79 +397,79 @@ def duration_change(mappings, ori_wav, sr):
     
     return output_wav
 
+# process using multithreading
+def worker(meta_data):
+    print(f"worker::: {meta_data}")
+    path, wave_name, phone, new_phone = meta_data
+    
+    while True:
+        s_midi_path = random.choice(all_midi_path)
+        midi_path = midi_file_fir + s_midi_path
+        notes = midi2notes(midi_path)
+
+        if len(notes) > len(new_phone):
+            break
+        pass
+
+    s_midi_path = s_midi_path.split(".")[0]
+
+    try:
+        wav, sr = librosa.core.load(path, sr=None)
+        syllables = get_syllables(mel_data[wave_name], phone, new_phone)
+        
+        # Part 1: Determine the correspondence between notes and syllables (one-to-many or many-to-one) according to the duration of MIDI and speech.
+        mappings = note_syllable_mapping(notes, syllables)
+        x = wav.astype(np.double)
+        _f0, t = pw.dio(x, sr, frame_period=12.5)    # raw pitch extractor
+        f0 = pw.stonemask(x, _f0, t, sr)  # pitch refinement
+        nonz = np.nonzero(f0)
+        mean_f0 = 0
+        for index in nonz:
+            mean_f0 = mean_f0 + f0[index] 
+        
+        # Part 2: Adjust MIDI tonality according to the average pitch of speech.
+        speech_mean_pitch = sum(mean_f0)/len(mean_f0)
+        new_mappings, notes_mean_pitch = midi_key_shift(speech_mean_pitch, mappings)
+        
+        # Part 3: Adjust pitch to get pitch-augmented wav.
+        pitch_wav = pitch_shift(new_mappings, wav, sr)
+        single_duration_wav = duration_change(new_mappings, wav, sr)
+
+        d_path = os.path.join(output_duration_dir, "/".join(path.split("/")[-4:]))
+        p_path = os.path.join(output_pitch_dir, "/".join(path.split("/")[-4:]))
+        pd_path = os.path.join(output_pdaugment_dir, "/".join(path.split("/")[-4:]))
+        if not os.path.exists(d_path):
+            os.makedirs(d_path)
+        if not os.path.exists(p_path):
+            os.makedirs(d_path)
+        if not os.path.exists(pd_path):
+            os.makedirs(d_path)
+        if not os.path.exists(os.path.join(output_duration_dir, "/".join(path.split("/")[-4:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt")):
+            os.system("cp " + os.path.join("/".join(path.split("/")[:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt") + " " + os.path.join(output_duration_dir, "/".join(path.split("/")[-4:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt"))
+        
+        sf.write(d_path, single_duration_wav, sr, 'PCM_24')
+        sf.write(p_path, pitch_wav, sr, 'PCM_24')
+
+        # Part 4: Adjust duration to get duration-augmented wav.
+        duration_wav = duration_change(new_mappings, pitch_wav, sr)
+        sf.write(pd_path, duration_wav, sr, 'PCM_24')
+    except Exception:
+        return
+
+def muli_task(N, tasks):
+    print(f"mulitask::: {N}, {tasks}")
+    pool = multiprocessing.Pool(N)
+    pool.map(worker, tasks)
+    pool.close()
+    pool.join()
+
+
 def main():
     print(f"main::: {pickle_path}, {frequency_json_file},{metadata_dir},{dataset_dir},{midi_file_fir},{output_duration_dir},{output_pitch_dir},{output_pdaugment_dir},{number_of_threads}")
     # metadata of libritts dataset
     frame_period = 12.5
     meta_data = pd.read_csv(metadata_dir)
     meta_datas = read_meta_data(meta_data)
-
-    # process using multithreading
-    def worker(meta_data):
-        print(f"worker::: {meta_data}")
-        path, wave_name, phone, new_phone = meta_data
-        
-        while True:
-            s_midi_path = random.choice(all_midi_path)
-            midi_path = midi_file_fir + s_midi_path
-            notes = midi2notes(midi_path)
-
-            if len(notes) > len(new_phone):
-                break
-            pass
-
-        s_midi_path = s_midi_path.split(".")[0]
-
-        try:
-            wav, sr = librosa.core.load(path, sr=None)
-            syllables = get_syllables(mel_data[wave_name], phone, new_phone)
-            
-            # Part 1: Determine the correspondence between notes and syllables (one-to-many or many-to-one) according to the duration of MIDI and speech.
-            mappings = note_syllable_mapping(notes, syllables)
-            x = wav.astype(np.double)
-            _f0, t = pw.dio(x, sr, frame_period=frame_period)    # raw pitch extractor
-            f0 = pw.stonemask(x, _f0, t, sr)  # pitch refinement
-            nonz = np.nonzero(f0)
-            mean_f0 = 0
-            for index in nonz:
-                mean_f0 = mean_f0 + f0[index] 
-            
-            # Part 2: Adjust MIDI tonality according to the average pitch of speech.
-            speech_mean_pitch = sum(mean_f0)/len(mean_f0)
-            new_mappings, notes_mean_pitch = midi_key_shift(speech_mean_pitch, mappings)
-            
-            # Part 3: Adjust pitch to get pitch-augmented wav.
-            pitch_wav = pitch_shift(new_mappings, wav, sr)
-            single_duration_wav = duration_change(new_mappings, wav, sr)
-
-            d_path = os.path.join(output_duration_dir, "/".join(path.split("/")[-4:]))
-            p_path = os.path.join(output_pitch_dir, "/".join(path.split("/")[-4:]))
-            pd_path = os.path.join(output_pdaugment_dir, "/".join(path.split("/")[-4:]))
-            if not os.path.exists(d_path):
-                os.makedirs(d_path)
-            if not os.path.exists(p_path):
-                os.makedirs(d_path)
-            if not os.path.exists(pd_path):
-                os.makedirs(d_path)
-            if not os.path.exists(os.path.join(output_duration_dir, "/".join(path.split("/")[-4:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt")):
-                os.system("cp " + os.path.join("/".join(path.split("/")[:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt") + " " + os.path.join(output_duration_dir, "/".join(path.split("/")[-4:-1]), "-".join(path.split("/")[-3:-1]) + ".trans.txt"))
-            
-            sf.write(d_path, single_duration_wav, sr, 'PCM_24')
-            sf.write(p_path, pitch_wav, sr, 'PCM_24')
-
-            # Part 4: Adjust duration to get duration-augmented wav.
-            duration_wav = duration_change(new_mappings, pitch_wav, sr)
-            sf.write(pd_path, duration_wav, sr, 'PCM_24')
-        except Exception:
-            return
-
-    def muli_task(N, tasks):
-        print(f"mulitask::: {N}, {tasks}")
-        pool = multiprocessing.Pool(N)
-        pool.map(worker, tasks)
-        pool.close()
-        pool.join()
-
     muli_task(number_of_threads, meta_datas)
 
 if __name__ == '__main__':
