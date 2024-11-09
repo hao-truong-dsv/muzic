@@ -456,7 +456,8 @@ def worker(meta_data):
         duration_wav = duration_change(new_mappings, pitch_wav, sr)
         sf.write(pd_path, duration_wav, sr, 'PCM_24')
         print("try 8", duration_wav)
-    except Exception:
+    except Exception as e:
+        print(e)
         return
 
 def muli_task(N, tasks):
