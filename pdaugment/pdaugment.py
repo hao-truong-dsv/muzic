@@ -487,6 +487,8 @@ if __name__ == '__main__':
     midis_train_path = "data/midis/freemidi"
     number_of_threads = 16
     all_midi_path = []
+    mel_data = None
+    fre = None
 
     try:
         pickle_path = sys.argv[1]
@@ -499,6 +501,12 @@ if __name__ == '__main__':
         output_pdaugment_dir = sys.argv[8]
         number_of_threads = int(sys.argv[9])
         midis_train_path = sys.argv[10]
+
+        with open(frequency_json_file) as f:
+            fre = json.load(f)
+
+        with open(pickle_path, "rb") as f:
+            mel_data = pickle.load(f)
 
         for file in os.listdir(midis_train_path):
             if os.path.splitext(file)[1] == '.mid':
