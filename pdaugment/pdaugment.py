@@ -412,7 +412,7 @@ def worker(meta_data):
         pass
 
     s_midi_path = s_midi_path.split(".")[0]
-    print("s_midi_path", s_midi_path)
+    print("s_midi_path", s_midi_path, path)
     try:
         wav, sr = librosa.core.load(path, sr=None)
         print("try 0", wav)
