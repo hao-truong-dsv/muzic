@@ -12,7 +12,6 @@ wandb
 fairseq==0.10.2
 miditoolkit
 matplotlib
-pytorch-fast-transformers==0.4.0
 scipy
 evaluate
 numpy==1.23.4
