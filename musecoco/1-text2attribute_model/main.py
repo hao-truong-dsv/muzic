@@ -182,10 +182,9 @@ class ModelArguments:
 
 
 def main():
-    model = AutoModelForSeq2SeqLM.from_pretrained(
-        "google/flan-t5-xl",
-        token=os.environ.get("HUGGINGFACE_HUB_TOKEN") 
-    )
+    os.environ["HUGGINGFACE_HUB_TOKEN"] = "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"  # Set your actual token
+
+    model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-xl")
 
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
