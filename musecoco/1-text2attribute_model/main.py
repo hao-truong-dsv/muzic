@@ -182,7 +182,7 @@ class ModelArguments:
 
 
 def main():
-    os.environ["HUGGINGFACE_HUB_TOKEN"] = "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"  # Set your actual token
+    # os.environ["HUGGINGFACE_HUB_TOKEN"] = "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"  # Set your actual token
 
     model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-xl")
 
